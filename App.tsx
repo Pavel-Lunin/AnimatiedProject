@@ -1,8 +1,26 @@
 import React, {useRef, useState} from 'react';
-import {Animated, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Animated,
+  PanResponder,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const App = () => {
   const opacity = useState(new Animated.Value(0))[0];
+
+  const pan = useRef(new Animated.ValueXY()).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
+      onPanResponderRelease: () => {
+        pan.extractOffset();
+      },
+    }),
+  ).current;
 
   function FadeInBall() {
     Animated.timing(opacity, {
@@ -31,7 +49,10 @@ const App = () => {
             borderRadius: 100 / 2,
             backgroundColor: 'red',
             marginBottom: 9,
+
+            transform: [{translateX: pan.x}, {translateY: pan.y}],
           }}
+          {...panResponder.panHandlers}
         />
         <TouchableOpacity
           style={{
