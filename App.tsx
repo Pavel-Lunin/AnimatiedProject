@@ -10,7 +10,7 @@ import {
 const App = () => {
   const opacity = useState(new Animated.Value(0))[0];
 
-  const pan = useRef(new Animated.ValueXY()).current;
+  const pan = useState(new Animated.ValueXY())[0];
 
   const panResponder = useRef(
     PanResponder.create({
@@ -18,6 +18,12 @@ const App = () => {
       onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
       onPanResponderRelease: () => {
         pan.extractOffset();
+      },
+      onPanResponderGrant: () => {
+        // pan.setOffset({
+        //   x: pan.x._value,
+        //   y: pan.y._value,
+        // });
       },
     }),
   ).current;
@@ -42,16 +48,19 @@ const App = () => {
     <View style={{flex: 1}}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Animated.View
-          style={{
-            opacity: opacity,
-            width: 100,
-            height: 150,
-            borderRadius: 100 / 2,
-            backgroundColor: 'red',
-            marginBottom: 9,
+          style={[
+            {
+              opacity: opacity,
+              width: 100,
+              height: 120,
+              borderRadius: 100 / 2,
+              backgroundColor: 'red',
+              marginBottom: 9,
 
-            transform: [{translateX: pan.x}, {translateY: pan.y}],
-          }}
+              // transform: [{translateX: pan.x}, {translateY: pan.y}],
+            },
+            pan.getLayout(),
+          ]}
           {...panResponder.panHandlers}
         />
         <TouchableOpacity
